@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+#------------------------------------------------------------------------------------------------------------------------------------------
+# Autor: Nido
+# Ultima modificação: 26/07/21
+# Versão: 1.0
+# contato: coqecoisa@gmail.com
+# Sobre: GUI para o replay-sorcery
+#------------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------------------------------------
+
+botao_selec=$(zenity --width=330 --height=200 --info \
+	  --text "Replay-Sorcery GUI \nVersão: 1.0:\nGrave replays instantaneas de seus jogos! \nGitHub:\n	https://github.com/matanui159/ReplaySorcery\n	https://github.com/NIDObr/sorcerygui" \
+	  --title="Replay-Sorcery GUI - 1.0" \
+	  --ok-label="Iniciar" \
+	  --extra-button="Interromper"
+)
+
+botao_ok="$?"
+
+case "$botao_selec" in
+	"Interromper")
+		printf '%s\n' "Interrompendo serviço..."
+		killall replay-sorcery
+		[[ "$?" = '0' ]] && {
+			zenity --width=300 --height=50 --info --text "Seviço interrompido." &
+		} || {
+			zenity --width=300 --height=50 --info --text "Serviço não esta em execução." &
+		}
+	;;
+	*)
+		[[ "$botao_ok" = '0' ]] && {
+			printf '%s\n' "Iniciando serviço..."s
+			replay-sorcery &
+			[[ "$?" = '0' ]] && {
+				printf '%s\n' "replay-sorcery iniciado..."
+				zenity --width=300 --height=50 --info --text "Seviço iniciado.\nRodando em background" &
+			} || {
+				printf '%s\n' "Erro ao executar \"replay-sorcery\"...saindo"
+				zenity --width=300 --height=50 --info --text "Erro ao executar \"replay-sorcery\"...saindo" &
+				exit 1
+			}
+		}
+	;;
+esac
